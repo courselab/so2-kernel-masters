@@ -1,0 +1,1 @@
+# Repositório do trabalho de Sistemas Operacionais 2 do grupo Kernel Masters
