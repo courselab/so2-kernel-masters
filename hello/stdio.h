@@ -12,5 +12,6 @@
 #define E8_H
 
 void __attribute__((fastcall, naked)) printf(const char *); 
+int __attribute__((fastcall, naked)) rtc_read(void); 
 
 #endif	
