@@ -74,7 +74,7 @@ void splash(void)
     }
   }
 
-  udelay(500);
+  udelay(2000);
   clearxy();
 }
 

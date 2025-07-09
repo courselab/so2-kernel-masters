@@ -11,7 +11,8 @@
 # exercise, redefine $(dos) to reflect your own DOS name, say
 # dos = "amazingOS"
 
-dos=$(shell basename $$(realpath .))
+# dos=$(shell basename $$(realpath .))
+dos = "KernelMasterDOS"
 
 # Build the OS and an example user program.
 
