@@ -11,13 +11,13 @@ CC=gcc
 MAKE=make
 
 # dos=$(shell basename $$(realpath .))
-dos="kmdos"
+dos=kmdos
 
 # Build the OS and an example user program.
 
 # Link all objects needed by the OS.
 
-$(dos).bin : bootloader.o bios1.o kernel.o kaux.o bios2.o logo.o syscall.o
+$(dos).bin : bootloader.o bios1.o kernel.o kaux.o bios2.o logo.o syscall.o filesystem.o
 	ld -melf_i386 -T tydos.ld --orphan-handling=discard $^ -o $@
 
 # Here we are statically linking the user program 'prob.bin' into the kernel,
@@ -78,7 +78,7 @@ buildtyfs:
 
 # requires tyfs be built first
 .PHONY: disk.img
-disk.img: buildtyfs
+disk.img: buildtyfs $(dos).bin
 	# Create an empty 1.44 MB floppy image (2880 * 512 bytes)
 	rm -f $@
 	dd if=/dev/zero of=$@ count=2880

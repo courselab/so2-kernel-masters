@@ -13,10 +13,11 @@
    by the bootloader, and the command-line interpreter. Other kernel functions
    were implemented separately in another source file for legibility. */
 
-#include "kernel.h" /* Essential kernel functions.  */
-#include "bios1.h"  /* For kwrite() etc.            */
-#include "bios2.h"  /* For kread() etc.             */
-#include "kaux.h"   /* Auxiliary kernel functions.  */
+#include "kernel.h"     /* Essential kernel functions.  */
+#include "bios1.h"      /* For kwrite() etc.            */
+#include "bios2.h"      /* For kread() etc.             */
+#include "kaux.h"       /* Auxiliary kernel functions.  */
+#include "filesystem.h" /* File system functions.      */
 
 /* Kernel's entry function. */
 
@@ -87,6 +88,7 @@ struct cmd_t cmds[] =
         {"help", f_help}, /* Print a help message.       */
         {"quit", f_quit}, /* Exit TyDOS.                 */
         {"hello", f_hello}, /* Execute an example program. */
+        {"ls", f_list}, /* Execute an example program. */
         {0, 0}};
 
 /* Build-in shell command: help. */
@@ -96,6 +98,7 @@ void f_help()
   kwrite("...me, Obi-Wan, you're my only hope!\n\n");
   kwrite("   But we can try also some commands:\n");
   kwrite("      hello   (to run a sample user program\n");
+  kwrite("      ls      (to list files in the current disk)\n");
   kwrite("      quit    (to exit TyDOS)\n");
 }
 
