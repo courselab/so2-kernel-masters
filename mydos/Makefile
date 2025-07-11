@@ -83,9 +83,13 @@ disk.img: buildtyfs $(dos).bin
 	rm -f $@
 	dd if=/dev/zero of=$@ count=2880
 	# format using tyfs
-	./tyfs/format -r 4 -s 16 $@
+	./tyfs/format -r 32 -s 16 $@
 	# put the OS binary into the image
 	dd if=$(dos).bin of=$@ seek=0 conv=notrunc obs=1 seek=16
+	# put test files in the image
+	./tyfs/put testfile1.txt $@
+	./tyfs/put testfile2.txt $@
+	./tyfs/put kernel.c $@
 
 
 .PHONY: clean

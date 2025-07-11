@@ -15,7 +15,7 @@
            by the bootloader (so as to respect the 512-byte length limit).*/
 
 	.code16gcc
-	.global kread, udelay, register_syscall_handler, sys_write
+	.global kread, udelay, register_syscall_handler, sys_write, load_dir
 
 	.section .text
 
@@ -123,11 +123,119 @@ syscall_table:
 	.long sys_exit		/* Syscall 1: exit.      */
 	.long sys_write		/* Syscall 2: write      */
 
-	/* Read-only data. */
 
+	/* We don't actually use these function in the example, but
+	   they are illustrative of low-level x86_16, and may come in
+	handy while working on related programming exercises. */
+
+ /* 
+ * lba_to_chs:                                                                                     
+ * Uses stack to store the first remainder safely.                                             
+ *
+ * Input:
+ *   %cx = LBA (0-based) 
+ * 
+ * Output: 
+ *   %ch: cylinder 
+ *   %dh: head   
+ *   %cl: sector
+ */
+
+lba_to_chs:
+
+        push %bp
+        mov %sp, %bp
+        sub $3, %sp
+
+        push %ax
+        push %bx
+        push %dx
+        push %si
+
+        /* Compute track and sector index */
+        mov %cx, %ax
+        xor %dx, %dx
+        mov $18, %si
+        div %si            /* %ax = track, %dx = sector index */
+
+        push %dx           /* Save sector index on stack */
+
+        /* Compute cylinder and head */
+        mov $2, %si
+        xor %dx, %dx
+        div %si            /* %ax = cylinder, %dx = head */
+
+        /* mov %al, cylinder */
+        /* mov %dl, head */
+
+        mov %al, -3(%bp)                /* save cylinder */
+        mov %dl, -2(%bp)                /* save head */
+
+        /* Recover sector index */
+            pop %bx            /* %bx = sector index */
+
+        /* sector = sector index + 1, insert cyl high bits */
+        mov %bl, %al
+        inc %al
+        and $0x3F, %al
+
+        /* mov cylinder, %ah */
+
+        mov -3(%bp), %ah                /* get saved cylinder */
+
+        shr $2, %ah
+        shl $6, %ah
+        or %ah, %al
+
+        /* mov %al, sector */
+
+        mov %al, -1(%bp)                /* save sector */
+
+        pop %si
+        pop %dx
+        pop %bx
+        pop %ax
+
+
+        movb -3(%bp), %ch
+        movb -2(%bp), %dh
+        movb -1(%bp), %cl
+
+        mov %bp, %sp
+        pop %bp
+
+        ret
+
+load_dir:
+	pusha 		/* Save all GP registers.              */
+
+	mov boot_drive, %dl
+	
+	mov $0x2, %ah
+	
+	mov $6, %al
+
+
+	mov $0, %ch /*cylinder*/
+	mov $32, %cl /*sector*/
+	mov $0, %dh /*head*/
+
+	mov $_DIR_BUFF_ADDR, %bx /*buffer address*/
+
+	int $0x13
+
+	mov $err_read_dir, %cx
+	jc fatal
+
+
+	popa 	/* Restore all GP registers.           */
+	ret
+
+	/* Read-only data. */
 	.section .rodata
 	.align 4
 
+err_read_dir: .string "Error reading directory\n"
 
 msg_err_lprg:
 	.string "Error loading program\n"

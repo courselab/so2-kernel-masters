@@ -88,7 +88,7 @@ struct cmd_t cmds[] =
         {"help", f_help}, /* Print a help message.       */
         {"quit", f_quit}, /* Exit TyDOS.                 */
         {"hello", f_hello}, /* Execute an example program. */
-        {"ls", f_list}, /* Execute an example program. */
+        {"ls", f_list_kernel}, /* Execute an example program. */
         {0, 0}};
 
 /* Build-in shell command: help. */
